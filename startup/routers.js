@@ -1,5 +1,8 @@
+const express = require('express');
 const users = require('../routers/users');
 
 module.exports = function (app) {
-    app.use('/api/users', users)
+    app.use(express.json());
+
+    app.use('/api/users', users);
 }
