@@ -1,0 +1,16 @@
+{
+  "name": "debenger-server",
+  "version": "1.0.0",
+  "description": "Backend API end points for debenger",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "HADI AMAN",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.0.4"
+  }
+}
