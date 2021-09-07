@@ -29,9 +29,9 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.methods.generateAuthenticationToken = ()=>{
+userSchema.methods.generateAuthenticationToken = function(){
     const payload = {_id: this._id, idAdmin: this.isAdmin};
-    const jwsPrivateKey = 'jwsPK';
+    const jwsPrivateKey = '123';
     const token = jwt.sign(payload, jwsPrivateKey);
     return token;
 }
