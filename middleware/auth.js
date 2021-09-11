@@ -7,7 +7,6 @@ exports.auth = function (req, res, next) {
     if(!token) return res.status('401').send('Access denied.');
 
     try {
-        
         const jwtPK = '123'
         const decoded = jwt.verify(token, jwtPK);
         req.user = decoded;
@@ -16,16 +15,6 @@ exports.auth = function (req, res, next) {
     } catch (ex) {
         res.status(400).send('Invalid token.');
     }
-
-}
-
-exports.validateAuthDelete = function (body) {
-
-    const schema = Joi.object({
-        password: Joi.string().min(6).max(1024).required()
-    });
-
-    return schema.validate(body);
 
 }
 

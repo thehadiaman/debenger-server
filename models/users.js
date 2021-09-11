@@ -46,3 +46,10 @@ exports.validate = function (body) {
     });
     return schema.validate(body)
 }
+
+exports.validateAuthDelete = function (body) {
+    const schema = Joi.object({
+        password: Joi.string().min(6).max(1024).required()
+    });
+    return schema.validate(body);
+}

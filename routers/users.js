@@ -1,21 +1,13 @@
-const {
-    validate,
-    User
-} = require('../models/users');
+const {validate, User, validateAuthDelete} = require('../models/users');
 const router = require('express').Router();
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
-const {
-    auth,
-    validateAuthDelete
-} = require('../middleware/auth');
-const {
-    v4
-} = require('uuid');
+const {auth} = require('../middleware/auth');
+const {v4} = require('uuid');
 
 let csrfToken;
 
-router.get('/', (req, res)=>{
+router.get('/csrf', (req, res)=>{
     csrfToken = v4();
     console.log(csrfToken);
     res.header('x-csrf-token', csrfToken).send('CSRF_');
