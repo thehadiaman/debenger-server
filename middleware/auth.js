@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
+const {User} = require("../models/users");
 
-exports.auth = function (req, res, next) {
+exports.auth = async function (req, res, next) {
 
     const token = req.header('x-auth-token');
     if(!token) return res.status('401').send('Access denied.');
@@ -10,6 +11,10 @@ exports.auth = function (req, res, next) {
         const jwtPK = '123'
         const decoded = jwt.verify(token, jwtPK);
         req.user = decoded;
+
+        const user = await User.findOne({_id: decoded._id});
+        if(!user) return res.status(400).send('No user found.');
+        req.user = user
         next();
 
     } catch (ex) {
