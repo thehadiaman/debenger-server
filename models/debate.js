@@ -17,11 +17,14 @@ exports.Debate = mongoose.model('Debate', new mongoose.Schema({
         type: Array,
         required: true
     },
-    participants: {
+    followers: {
         type: Array
     },
     like: {
-        type: Number
+        type: new mongoose.Schema({
+            lovers: Array,
+            likes: Number
+        })
     },
     date: {
         type: Date,
