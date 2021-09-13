@@ -2,18 +2,9 @@ const router = require('express').Router();
 const {User} = require("../models/users");
 const {Debate, validate} = require("../models/debate");
 const {auth} = require("../middleware/auth");
-const {v4} = require("uuid");
 const _ = require('lodash');
 
-let csrfToken;
-
-router.get('/csrf', auth, (req, res)=>{
-    csrfToken = v4();
-    res.send({csrfToken: csrfToken});
-});
-
 router.post('/', auth, async(req, res)=>{
-    if(csrfToken !== req.header('x-csrf-token')) return res.status(400).send('Invalid CSRF Token.');
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 

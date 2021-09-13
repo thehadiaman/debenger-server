@@ -3,20 +3,9 @@ const router = require('express').Router();
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const {auth} = require('../middleware/auth');
-const {v4} = require('uuid');
 
-let csrfToken;
-
-router.get('/csrf', (req, res)=>{
-    csrfToken = v4();
-    console.log(csrfToken);
-    res.header('x-csrf-token', csrfToken).send('CSRF_');
-});
 
 router.post('/', async (req, res) => {
-    if (!req.header('x-csrf-token') || (csrfToken !== req.header('x-csrf-token')))
-        return res.status(400).send('Invalid CSRF token.')
-
     const {
         error
     } = validate(req.body);
