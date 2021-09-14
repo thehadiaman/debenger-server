@@ -49,6 +49,29 @@ exports.Debate = mongoose.model('Debate', new mongoose.Schema({
                 required: true
             }
         })
+    },
+    messages: {
+        type: new mongoose.Schema({
+            messenger: {
+                type: new mongoose.Schema({
+                    _id: {type: String, required: true},
+                    name: {type: String, required: true}
+                }),
+            },
+            time: {
+                type: Date,
+                default: Date.now(),
+            },
+            message: {
+                type: String
+            },
+            like: {
+                type: new mongoose.Schema({
+                    liker: Array,
+                    likes: Number
+                })
+            }
+        })
     }
 }));
 
@@ -57,6 +80,13 @@ exports.validate = (body) => {
         title: Joi.string().min(5).max(100).required(),
         description: Joi.string().min(10).max(225),
         tags: Joi.string().min(1).required()
+    });
+    return schema.validate(body);
+}
+
+exports.validateMessage = (body) => {
+    const schema = Joi.object({
+        message: Joi.string().min(1).max(1024).required(),
     });
     return schema.validate(body);
 }

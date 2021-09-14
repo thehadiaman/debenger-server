@@ -1,7 +1,8 @@
 const router = require('express').Router();
-const {Debate, validate} = require("../models/debate");
+const {Debate, validate, validateMessage} = require("../models/debate");
 const {auth} = require("../middleware/auth");
 const _ = require('lodash');
+const mongoose = require('mongodb');
 
 router.post('/', auth, async(req, res)=>{
     const {error} = validate(req.body);
@@ -44,10 +45,23 @@ router.get('/like/:id', auth, async(req, res)=>{
             $pull: {'like.lovers': _.pick(req.user, ['_id', 'name', 'email'])}, $inc: {'like.likes': -1}});
         return res.send(`Unliked debate ${debate.title}`);
     }
-
     await Debate.findByIdAndUpdate(req.params.id, {
         $push: {'like.lovers': _.pick(req.user, ['_id', 'name', 'email'])}, $inc: {'like.likes': 1}});
     res.send(`Liked debate ${debate.title}`);
+});
+
+router.post('/message/:id', auth, async(req, res)=>{
+
+    const debate = await Debate.findOne({_id: req.params.id});
+    if(!debate) return req.status(400).send('No debate found.');
+
+    const {error} = validateMessage(_.pick(req.body, ['message']));
+    if(error) return res.status(400).send(error.details[0].message);
+
+    await Debate.findByIdAndUpdate(req.params.id, {
+        $push: {messages: {messenger:{_id: req.user._id, name: req.user.name}, message: req.body.message} }});
+    res.send(`${req.body.message}`);
+
 });
 
 module.exports = router;
