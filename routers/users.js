@@ -3,7 +3,7 @@ const router = require('express').Router();
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const {auth} = require('../middleware/auth');
-const {verified, validateVerification} = require("../middleware/verified");
+const {verified, validateVerification} = require("../middleware/verification");
 
 
 router.post('/', async (req, res) => {
