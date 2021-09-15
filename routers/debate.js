@@ -2,7 +2,7 @@ const router = require('express').Router();
 const {Debate, validate, validateMessage} = require("../models/debate");
 const {auth} = require("../middleware/auth");
 const _ = require('lodash');
-const mongoose = require('mongodb');
+const mongodb = require("mongodb");
 
 router.post('/', auth, async(req, res)=>{
     const {error} = validate(req.body);
@@ -53,7 +53,7 @@ router.get('/like/:id', auth, async(req, res)=>{
 router.post('/message/:id', auth, async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
-    if(!debate) return req.status(400).send('No debate found.');
+    if(!debate) return res.status(400).send('No debate found.');
 
     const {error} = validateMessage(_.pick(req.body, ['message']));
     if(error) return res.status(400).send(error.details[0].message);
@@ -61,6 +61,32 @@ router.post('/message/:id', auth, async(req, res)=>{
     await Debate.findByIdAndUpdate(req.params.id, {
         $push: {messages: {messenger:{_id: req.user._id, name: req.user.name}, message: req.body.message} }});
     res.send(`${req.body.message}`);
+
+});
+
+router.get('/messages/:id', async(req, res)=>{
+
+    const debate = await Debate.findOne({_id: req.params.id});
+    if(!debate) return res.status(400).send('No debate found.');
+
+    let messages = await Debate.aggregate([
+        {
+            $match: {_id: mongodb.ObjectId(req.params.id)}
+        },
+        {
+            $project: {
+                _id: 0,
+                'messages.messenger._id': 1,
+                'messages.messenger.name': 1,
+                'messages.time': 1,
+                'messages.message': 1
+            }
+        }
+    ]);
+
+    messages = messages[0].messages
+
+    res.send(messages);
 
 });
 
