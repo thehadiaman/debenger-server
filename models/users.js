@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
 const jwt = require("jsonwebtoken");
+const sgMail = require('@sendgrid/mail')
 
 
 const userSchema = new mongoose.Schema({
@@ -26,14 +27,54 @@ const userSchema = new mongoose.Schema({
     isAdmin: {
         type: Boolean,
         default: false
+    },
+    verified: {
+        type: new mongoose.Schema({
+            verified: {
+                type: Boolean,
+                default: false
+            },
+            code: String,
+            error: {
+                type: Number,
+                min: 0,
+                max: 3,
+                default: 0
+            },
+            time: {
+                type: Date,
+                default: Date.now()
+            }
+        }),
+        default: {verified: false}
     }
 });
 
 userSchema.methods.generateAuthenticationToken = function(){
     const payload = {_id: this._id, idAdmin: this.isAdmin};
     const jwsPrivateKey = '123';
-    const token = jwt.sign(payload, jwsPrivateKey);
-    return token;
+    return jwt.sign(payload, jwsPrivateKey);
+}
+
+userSchema.methods.sendVerificationCode = function(){
+    sgMail.setApiKey(process.env.EMAIL_API)
+
+    const msg = {
+        to: this.email,
+        from: process.env.EMAIL,
+        subject: 'Debenger account verification code',
+        text: 'Debenger - Debating messenger application',
+        html: `<p>Your Debenger verificaton code is <u><b>${this.verified.code}</b></u>. </p>`,
+    }
+
+    sgMail
+        .send(msg)
+        .then((response) => {
+            return true
+        })
+        .catch((error) => {
+            return false
+        })
 }
 
 exports.User = mongoose.model('User', userSchema);

@@ -3,8 +3,9 @@ const {Debate, validate, validateMessage} = require("../models/debate");
 const {auth} = require("../middleware/auth");
 const _ = require('lodash');
 const mongodb = require("mongodb");
+const {verified} = require("../middleware/verified");
 
-router.post('/', auth, async(req, res)=>{
+router.post('/', [auth, verified], async(req, res)=>{
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
@@ -18,7 +19,7 @@ router.post('/', auth, async(req, res)=>{
     res.send(debate);
 });
 
-router.get('/follow/:id', auth, async(req, res)=>{
+router.get('/follow/:id', [auth, verified], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
@@ -34,7 +35,7 @@ router.get('/follow/:id', auth, async(req, res)=>{
 
 });
 
-router.get('/like/:id', auth, async(req, res)=>{
+router.get('/like/:id', [auth, verified], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return req.status(400).send('No debate found.');
@@ -50,7 +51,7 @@ router.get('/like/:id', auth, async(req, res)=>{
     res.send(`Liked debate ${debate.title}`);
 });
 
-router.post('/message/:id', auth, async(req, res)=>{
+router.post('/message/:id', [auth, verified], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
