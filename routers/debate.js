@@ -64,29 +64,24 @@ router.post('/message/:id', auth, async(req, res)=>{
 
 });
 
-router.get('/messages/:id', async(req, res)=>{
+router.get('/', async(req, res)=>{
 
-    const debate = await Debate.findOne({_id: req.params.id});
-    if(!debate) return res.status(400).send('No debate found.');
-
-    let messages = await Debate.aggregate([
-        {
-            $match: {_id: mongodb.ObjectId(req.params.id)}
-        },
+    const debate = await Debate.aggregate([
         {
             $project: {
                 _id: 0,
-                'messages.messenger._id': 1,
-                'messages.messenger.name': 1,
-                'messages.time': 1,
-                'messages.message': 1
+                title: 1,
+                description: 1,
+                tags: 1,
+                followers: 1,
+                date: 1,
+                host: 1,
+                messages: 1
             }
         }
     ]);
 
-    messages = messages[0].messages
-
-    res.send(messages);
+    res.send(debate);
 
 });
 
