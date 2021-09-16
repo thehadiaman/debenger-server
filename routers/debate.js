@@ -4,6 +4,7 @@ const {auth} = require("../middleware/auth");
 const _ = require('lodash');
 const {verified} = require("../middleware/verification");
 const {follower} = require("../middleware/follower");
+const {User} = require("../models/users");
 
 
 router.post('/', auth, verified, async(req, res)=>{
@@ -40,16 +41,22 @@ router.get('/follow/:id', auth, verified, async(req, res)=>{
 router.get('/like/:id', [auth, verified], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
-    if(!debate) return req.status(400).send('No debate found.');
+    if(!debate) return res.status(400).send('No debate found.');
 
-    const user = await Debate.findOne({'like.lovers': {$in: _.pick(req.user, ['_id', 'name'])}});
+    const user = await Debate.findOne({_id: debate._id, 'like.lovers': {$in: _.pick(req.user, ['_id', 'name'])}});
     if(user){
         await Debate.findByIdAndUpdate(req.params.id, {
             $pull: {'like.lovers': _.pick(req.user, ['_id', 'name'])}, $inc: {'like.likes': -1}});
+        await User.findByIdAndUpdate(req.user._id, {
+            $pull: {liked: _.pick(debate, ['_id', 'title'])}
+        });
         return res.send(`Unliked debate ${debate.title}`);
     }
     await Debate.findByIdAndUpdate(req.params.id, {
         $push: {'like.lovers': _.pick(req.user, ['_id', 'name'])}, $inc: {'like.likes': 1}});
+    await User.findByIdAndUpdate(req.user._id, {
+        $push: {liked: _.pick(debate, ['_id', 'title'])}
+    });
     res.send(`Liked debate ${debate.title}`);
 });
 

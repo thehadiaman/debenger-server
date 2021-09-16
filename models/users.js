@@ -47,7 +47,8 @@ const userSchema = new mongoose.Schema({
             }
         }),
         default: {verified: false}
-    }
+    },
+    liked: Array
 });
 
 userSchema.methods.generateAuthenticationToken = function(){
