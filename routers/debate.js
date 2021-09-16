@@ -20,7 +20,7 @@ router.post('/', auth, verified, async(req, res)=>{
     debate.followers.push(_.pick(req.user, ['_id', 'name']));
     await debate.save();
     await User.findByIdAndUpdate(req.user._id, {
-        $push: {following: _.pick(debate, ['_id', 'title'])}
+        $push: {following: _.pick(debate, ['_id', 'title']), debates: _.pick(debate, ['_id', 'title'])}
     });
     res.send(debate);
 });

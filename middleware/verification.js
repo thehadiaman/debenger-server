@@ -9,7 +9,7 @@ exports.verified = async function (req, res, next) {
 
 exports.validateVerification = function (body) {
     const schema = Joi.object({
-        verificationCode: Joi.string().min(6).max(1024).required()
+        verificationCode: Joi.string().min(5).max(10).required()
     });
     return schema.validate(body);
 }
