@@ -31,7 +31,7 @@ router.get('/follow/:id', auth, verified, async(req, res)=>{
     if(!debate) return res.status(400).send('No debate found.');
 
     const user = await Debate.findOne({_id:debate._id, followers: {$in: _.pick(req.user, ['_id', 'name'])}});
-    if(user) return res.status(400).send('Already a followed the debate.');
+    if(user) return res.status(400).send('Already followed the debate.');
 
     await Debate.findByIdAndUpdate(req.params.id, {
         $push: {followers: _.pick(req.user, ['_id', 'name'])}
@@ -39,6 +39,26 @@ router.get('/follow/:id', auth, verified, async(req, res)=>{
 
     await User.findByIdAndUpdate(req.user._id, {
         $push: {following: _.pick(debate, ['_id', 'title'])}
+    });
+
+    res.send(req.user);
+
+});
+
+router.get('/unfollow/:id', auth, verified, async(req, res)=>{
+
+    const debate = await Debate.findOne({_id: req.params.id});
+    if(!debate) return res.status(400).send('No debate found.');
+
+    const user = await Debate.findOne({_id:debate._id, followers: {$in: _.pick(req.user, ['_id', 'name'])}});
+    if(!user) return res.status(400).send('Already unfollowed the debate.');
+
+    await Debate.findByIdAndUpdate(req.params.id, {
+        $pull: {followers: _.pick(req.user, ['_id', 'name'])}
+    });
+
+    await User.findByIdAndUpdate(req.user._id, {
+        $pull: {following: _.pick(debate, ['_id', 'title'])}
     });
 
     res.send(req.user);
