@@ -19,6 +19,9 @@ router.post('/', auth, verified, async(req, res)=>{
     debate.tags = req.body.tags;
     debate.followers.push(_.pick(req.user, ['_id', 'name']));
     await debate.save();
+    await User.findByIdAndUpdate(req.user._id, {
+        $push: {following: _.pick(debate, ['_id', 'title'])}
+    });
     res.send(debate);
 });
 
@@ -27,11 +30,15 @@ router.get('/follow/:id', auth, verified, async(req, res)=>{
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
 
-    const user = await Debate.findOne({followers: {$in: _.pick(req.user, ['_id', 'name'])}});
+    const user = await Debate.findOne({_id:debate._id, followers: {$in: _.pick(req.user, ['_id', 'name'])}});
     if(user) return res.status(400).send('Already a followed the debate.');
 
     await Debate.findByIdAndUpdate(req.params.id, {
         $push: {followers: _.pick(req.user, ['_id', 'name'])}
+    });
+
+    await User.findByIdAndUpdate(req.user._id, {
+        $push: {following: _.pick(debate, ['_id', 'title'])}
     });
 
     res.send(req.user);
@@ -52,11 +59,14 @@ router.get('/like/:id', [auth, verified], async(req, res)=>{
         });
         return res.send(`Unliked debate ${debate.title}`);
     }
+
     await Debate.findByIdAndUpdate(req.params.id, {
         $push: {'like.lovers': _.pick(req.user, ['_id', 'name'])}, $inc: {'like.likes': 1}});
+
     await User.findByIdAndUpdate(req.user._id, {
         $push: {liked: _.pick(debate, ['_id', 'title'])}
     });
+
     res.send(`Liked debate ${debate.title}`);
 });
 
