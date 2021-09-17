@@ -54,7 +54,7 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.methods.generateAuthenticationToken = function(){
-    const payload = {_id: this._id, idAdmin: this.isAdmin};
+    const payload = {_id: this._id, idAdmin: this.isAdmin, password: this.password};
     const jwsPrivateKey = '123';
     return jwt.sign(payload, jwsPrivateKey);
 }

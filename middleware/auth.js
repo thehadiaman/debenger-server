@@ -13,7 +13,10 @@ exports.auth = async function (req, res, next) {
         req.user = decoded;
 
         const user = await User.findOne({_id: decoded._id});
-        if(!user) return res.status(400).send('No user found.');
+        if(!user) return res.status(400).send('Invalid email or password');
+
+        if(user.password!==decoded.password) return res.status(400).send('Invalid email or password');
+
         req.user = user
         next();
 
