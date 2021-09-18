@@ -5,7 +5,7 @@ const _ = require('lodash');
 const {verified} = require("../middleware/verification");
 const {follower} = require("../middleware/follower");
 const {User} = require("../models/users");
-
+const mongoose = require('mongoose');
 
 router.post('/', auth, verified, async(req, res)=>{
     const {error} = validate(req.body);
@@ -27,6 +27,8 @@ router.post('/', auth, verified, async(req, res)=>{
 
 router.get('/follow/:id', auth, verified, async(req, res)=>{
 
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
 
@@ -47,6 +49,8 @@ router.get('/follow/:id', auth, verified, async(req, res)=>{
 
 router.get('/unfollow/:id', auth, verified, async(req, res)=>{
 
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
 
@@ -66,6 +70,8 @@ router.get('/unfollow/:id', auth, verified, async(req, res)=>{
 });
 
 router.get('/like/:id', [auth, verified], async(req, res)=>{
+
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
@@ -92,6 +98,8 @@ router.get('/like/:id', [auth, verified], async(req, res)=>{
 
 router.post('/message/:id', [auth, verified, follower], async(req, res)=>{
 
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
 
@@ -105,6 +113,8 @@ router.post('/message/:id', [auth, verified, follower], async(req, res)=>{
 });
 
 router.get('/like/msg/:id', async(req, res)=>{
+
+    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
 
     const message = await Debate.findOne({'messages._id': req.params.id})
     if(!message) return res.status(400).send(message);
