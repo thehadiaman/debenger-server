@@ -1,0 +1,5 @@
+{
+  "jwsPrivateKey": "SECRET_KEY",
+  "EMAIL_API": "EMAIL_API",
+  "EMAIL": "EMAIL"
+}

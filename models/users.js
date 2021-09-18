@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Joi = require('joi');
 const jwt = require("jsonwebtoken");
 const sgMail = require('@sendgrid/mail')
-
+const config = require('config');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -55,16 +55,16 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.generateAuthenticationToken = function(){
     const payload = {_id: this._id, idAdmin: this.isAdmin, password: this.password};
-    const jwsPrivateKey = '123';
+    const jwsPrivateKey = config.get('jwsPrivateKey');
     return jwt.sign(payload, jwsPrivateKey);
 }
 
 userSchema.methods.sendVerificationCode = function(){
-    sgMail.setApiKey(process.env.EMAIL_API)
+    sgMail.setApiKey(config.get('EMAIL_API'))
 
     const msg = {
         to: this.email,
-        from: process.env.EMAIL,
+        from: config.get('EMAIL'),
         subject: 'Debenger account verification code',
         text: 'Debenger - Debating messenger application',
         html: `<p>Your Debenger verificaton code is <u><b>${this.verified.code}</b></u>. </p>`,
