@@ -6,8 +6,7 @@ const {auth} = require('../middleware/auth');
 const {verified, validateVerification} = require("../middleware/verification");
 const {Debate} = require("../models/debate");
 
-router.get('/:userId', async(req, res)=>{
-
+router.get('/user/:userId', async(req, res)=>{
     const user = await User.findOne({_id: req.params.userId});
     if(!user) return res.status(400).send("No user found");
 
@@ -46,7 +45,7 @@ router.get('/getVerificationCode', auth, async(req, res)=>{
 
     user.verified.code = Math.floor(Math.random() * 1000000)
     user.verified.time = Date.now();
-    user.save()
+    await user.save()
     user.sendVerificationCode()
     res.send(true);
 });
