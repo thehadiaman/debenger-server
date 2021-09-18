@@ -5,6 +5,9 @@ const app = require('express')();
 // Logging errors
 require('./startup/logging.js')()
 
+// An error will throw if custom environment variables is not defined
+require('./startup/config.js')();
+
 // Connecting to mongodb
 require('./startup/database')();
 
