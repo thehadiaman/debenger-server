@@ -1,6 +1,7 @@
 global.TextDecoder = require('util').TextDecoder;
 global.TextEncoder = require('util').TextEncoder;
 const app = require('express')();
+require('express-async-errors');
 
 // Logging errors
 require('./startup/logging.js')()
