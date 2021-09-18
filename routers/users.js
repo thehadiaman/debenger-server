@@ -17,6 +17,13 @@ router.get('/user/:userId', async(req, res)=>{
 
 });
 
+router.get('/me', auth, async(req, res)=>{
+    
+    const user = _.pick(req.user, ['name', 'email']);
+    res.send(user)
+
+});
+
 
 router.post('/', async (req, res) => {
     const {
