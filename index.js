@@ -2,6 +2,8 @@ global.TextDecoder = require('util').TextDecoder;
 global.TextEncoder = require('util').TextEncoder;
 const app = require('express')();
 
+// Logging errors
+require('./startup/logging.js')()
 
 // Connecting to mongodb
 require('./startup/database')();
