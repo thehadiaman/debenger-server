@@ -104,6 +104,15 @@ router.post('/message/:id', [auth, verified, follower], async(req, res)=>{
 
 });
 
+router.get('/like/msg/:id', async(req, res)=>{
+
+    const message = await Debate.findOne({'messages._id': req.params.id})
+    if(!message) return res.status(400).send(message);
+
+    res.send(message)
+
+});
+
 router.get('/', async(req, res)=>{
 
     const debate = await Debate.aggregate([
@@ -115,7 +124,8 @@ router.get('/', async(req, res)=>{
                 followers: 1,
                 date: 1,
                 host: 1,
-                messages: 1
+                messages: 1,
+                like: 1
             }
         }
     ]);
