@@ -6,7 +6,7 @@ const {verified} = require("../middleware/verification");
 const {follower} = require("../middleware/follower");
 const {User} = require("../models/users");
 const mongoose = require('mongoose');
-const params = require("../middleware/params");
+const {params} = require("../middleware/params");
 
 router.post('/', [auth, verified], async(req, res)=>{
     const {error} = validate(req.body);

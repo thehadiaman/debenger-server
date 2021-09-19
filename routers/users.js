@@ -5,8 +5,7 @@ const bcrypt = require('bcrypt');
 const {auth} = require('../middleware/auth');
 const {verified, validateVerification} = require("../middleware/verification");
 const {Debate} = require("../models/debate");
-const mongoose = require('mongoose');
-const params = require("../middleware/params");
+const {params} = require("../middleware/params");
 
 router.get('/user/:id', params, async(req, res)=>{
     const user = await User.findOne({_id: req.params.id});

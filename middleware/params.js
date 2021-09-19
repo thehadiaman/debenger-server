@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
-
+const {Types} = require("mongoose");
 exports.params = function (req, res, next) {
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+    if(!Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
     next();
 }
