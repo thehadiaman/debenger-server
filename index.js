@@ -18,6 +18,6 @@ require('./startup/routers')(app);
 // Setup for production
 require('./startup/prod')(app);
 
-app.listen(process.env.debenger_PORT || 3000, ()=>{
-    console.log(`Listening in port ${process.env.debenger_PORT || 3000}`);
+app.listen(process.env.PORT || 3000, ()=>{
+    console.log(`Listening in port ${process.env.PORT || 3000}`);
 });

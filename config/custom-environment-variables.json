@@ -2,5 +2,5 @@
   "jwsPrivateKey": "SECRET_KEY",
   "EMAIL_API": "EMAIL_API",
   "EMAIL": "EMAIL",
-  "DB_SERVER": "DBS"
+  "PROD_DB": "DB_SERVER"
 }

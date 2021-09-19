@@ -5,7 +5,7 @@ const {
     connect
 } = require("mongoose");
 
-const uri = app.get('env')==='production' ? config.get('DB_SERVER'): config.get('DBS');
+const uri = app.get('env')==='production' ? config.get('PROD_DB'): config.get('DEV_DB');
 
 module.exports = function () {
     connect(uri)
