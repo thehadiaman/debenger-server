@@ -6,8 +6,9 @@ const {verified} = require("../middleware/verification");
 const {follower} = require("../middleware/follower");
 const {User} = require("../models/users");
 const mongoose = require('mongoose');
+const params = require("../middleware/params");
 
-router.post('/', auth, verified, async(req, res)=>{
+router.post('/', [auth, verified], async(req, res)=>{
     const {error} = validate(req.body);
     if(error) return res.status(400).send(error.details[0].message);
 
@@ -25,9 +26,7 @@ router.post('/', auth, verified, async(req, res)=>{
     res.send(debate);
 });
 
-router.get('/follow/:id', auth, verified, async(req, res)=>{
-
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+router.get('/follow/:id', [auth, verified, params], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
@@ -47,9 +46,7 @@ router.get('/follow/:id', auth, verified, async(req, res)=>{
 
 });
 
-router.get('/unfollow/:id', auth, verified, async(req, res)=>{
-
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+router.get('/unfollow/:id', [auth, verified, params], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
@@ -69,9 +66,7 @@ router.get('/unfollow/:id', auth, verified, async(req, res)=>{
 
 });
 
-router.get('/like/:id', [auth, verified], async(req, res)=>{
-
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+router.get('/like/:id', [auth, verified, params], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
@@ -96,9 +91,7 @@ router.get('/like/:id', [auth, verified], async(req, res)=>{
     res.send(`Liked debate ${debate.title}`);
 });
 
-router.post('/message/:id', [auth, verified, follower], async(req, res)=>{
-
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
+router.post('/message/:id', [auth, verified, follower, params], async(req, res)=>{
 
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found.');
@@ -109,17 +102,6 @@ router.post('/message/:id', [auth, verified, follower], async(req, res)=>{
     await Debate.findByIdAndUpdate(req.params.id, {
         $push: {messages: {messenger:{_id: req.user._id, name: req.user.name}, message: req.body.message} }});
     res.send(`${req.body.message}`);
-
-});
-
-router.get('/like/msg/:id', async(req, res)=>{
-
-    if(!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).send('invalid parameter');
-
-    const message = await Debate.findOne({'messages._id': req.params.id})
-    if(!message) return res.status(400).send(message);
-
-    res.send(message)
 
 });
 

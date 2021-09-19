@@ -6,11 +6,10 @@ const {auth} = require('../middleware/auth');
 const {verified, validateVerification} = require("../middleware/verification");
 const {Debate} = require("../models/debate");
 const mongoose = require('mongoose');
+const params = require("../middleware/params");
 
-router.get('/user/:userId', async(req, res)=>{
-    if(!mongoose.Types.ObjectId.isValid(req.params.userId)) return res.status(400).send('invalid parameter');
-
-    const user = await User.findOne({_id: req.params.userId});
+router.get('/user/:id', params, async(req, res)=>{
+    const user = await User.findOne({_id: req.params.id});
     if(!user) return res.status(400).send("No user found");
 
     res.send(_.pick(user, ['name', 'debates', 'following']));

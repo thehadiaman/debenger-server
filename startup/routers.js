@@ -10,5 +10,6 @@ module.exports = function (app) {
     app.use('/api/auth', auth);
     app.use('/api/users', users);
     app.use('/api/debate', debate);
+    app.use('/api/admin', debate);
     app.use(error);
 }

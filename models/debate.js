@@ -56,12 +56,6 @@ exports.Debate = mongoose.model('Debate', new mongoose.Schema({
             },
             message: {
                 type: String
-            },
-            like: {
-                type: new mongoose.Schema({
-                    liker: Array,
-                    likes: Number
-                })
             }
         })
     }
