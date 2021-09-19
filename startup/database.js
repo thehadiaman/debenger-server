@@ -7,7 +7,6 @@ const {
 
 const uri = app.get('env')==='production' ? config.get('DB_SERVER'): config.get('DBS');
 
-console.log(uri)
 module.exports = function () {
     connect(uri)
         .then(() => {
