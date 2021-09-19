@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');
 const {User} = require("../models/users");
+const config = require("config");
 
 exports.auth = async function (req, res, next) {
 
@@ -8,7 +9,7 @@ exports.auth = async function (req, res, next) {
     if(!token) return res.status('401').send('Access denied.');
 
     try {
-        const jwtPK = '123'
+        const jwtPK = config.get('jwsPrivateKey');
         const decoded = jwt.verify(token, jwtPK);
         req.user = decoded;
 
