@@ -41,6 +41,29 @@ exports.Debate = mongoose.model('Debate', new mongoose.Schema({
                 required: true
             }
         })
+    },
+    messages: {
+        type: new mongoose.Schema({
+            messenger: {
+                type: new mongoose.Schema({
+                    _id: {type: String, required: true},
+                    name: {type: String, required: true}
+                }),
+            },
+            time: {
+                type: Date,
+                default: Date.now(),
+            },
+            message: {
+                type: String
+            },
+            like: {
+                type: new mongoose.Schema({
+                    liker: Array,
+                    likes: Number
+                })
+            }
+        })
     }
 }));
 
