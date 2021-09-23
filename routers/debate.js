@@ -107,6 +107,9 @@ router.post('/message/:id', [auth, verified, follower, params], async(req, res)=
 
 router.get('/', async(req, res)=>{
 
+    const pageNumber = req.query.page || 1;
+    const pageSize = 2;
+
     const debate = await Debate.aggregate([
         {
             $project: {
@@ -119,6 +122,12 @@ router.get('/', async(req, res)=>{
                 messages: 1,
                 like: 1
             }
+        },
+        {
+            $skip: (pageNumber-1)*pageSize
+        },
+        {
+            $limit: 2
         }
     ]);
     res.send(debate);
