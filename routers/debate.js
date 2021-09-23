@@ -138,4 +138,27 @@ router.delete('/:id', [auth, verified, params], async (req, res) => {
     res.send(debate);
 });
 
+router.put('/:id', [auth, verified, params], async (req, res)=>{
+    const debate = await Debate.findOne({_id: req.params.id});
+    if(!debate) return res.status(400).send('No debate found');
+
+    if(`${req.user._id}` !== `${objectId(debate.host._id)}`) return res.status(401).send('Can\'t edit debate.');
+
+    const {error} = validate(req.body);
+    if(error) return res.status(400).send(error.details[0].message);
+
+    const result = await Debate.findByIdAndUpdate(objectId(req.params.id), req.body, {new: true});
+
+    await User.updateMany({'following._id': objectId(req.params.id)}, {$push: {following: _.pick(result, ['_id', 'title'])}});
+    await User.updateMany({'following._id': objectId(req.params.id)}, {$pull: {following: _.pick(debate, ['_id', 'title'])}});
+
+    await User.updateMany({'liked._id': objectId(req.params.id)}, {$push: {liked: _.pick(result, ['_id', 'title'])}});
+    await User.updateMany({'liked._id': objectId(req.params.id)}, {$pull: {liked: _.pick(debate, ['_id', 'title'])}});
+
+    await User.findByIdAndUpdate(req.user._id, {$push: {debates: _.pick(result, ['_id', 'title'])}});
+    await User.findByIdAndUpdate(req.user._id, {$pull: {debates: _.pick(debate, ['_id', 'title'])}});
+
+    res.send(result);
+});
+
 module.exports = router;
