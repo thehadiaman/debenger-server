@@ -8,6 +8,8 @@ const {params} = require("../middleware/params");
 const router = require('express').Router();
 
 router.get('/users', [auth, admin], async(req, res)=>{
+    const pageNumber = req.query.page || 1;
+    const pageSize = 5;
 
     const users = await User.aggregate([
         {
@@ -21,6 +23,12 @@ router.get('/users', [auth, admin], async(req, res)=>{
                 following: 1,
                 debates: 1
             }
+        },
+        {
+            $skip: (pageNumber-1)*pageSize
+        },
+        {
+            $limit: pageSize
         }
     ]);
 
@@ -29,6 +37,8 @@ router.get('/users', [auth, admin], async(req, res)=>{
 });
 
 router.get('/debates', [auth, admin], async(req, res)=>{
+    const pageNumber = req.query.page || 1;
+    const pageSize = 5;
 
     const debates = await Debate.aggregate([
         {
@@ -43,6 +53,12 @@ router.get('/debates', [auth, admin], async(req, res)=>{
                 like: 1,
                 messages: 1
             }
+        },
+        {
+            $skip: (pageNumber-1)*pageSize
+        },
+        {
+            $limit: pageSize
         }
     ]);
 

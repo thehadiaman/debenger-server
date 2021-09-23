@@ -108,7 +108,7 @@ router.post('/message/:id', [auth, verified, follower, params], async(req, res)=
 router.get('/', async(req, res)=>{
 
     const pageNumber = req.query.page || 1;
-    const pageSize = 2;
+    const pageSize = 5;
 
     const debate = await Debate.aggregate([
         {
@@ -127,7 +127,7 @@ router.get('/', async(req, res)=>{
             $skip: (pageNumber-1)*pageSize
         },
         {
-            $limit: 2
+            $limit: pageSize
         }
     ]);
     res.send(debate);
