@@ -24,6 +24,7 @@
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
+    "mongodb": "^4.1.2",
     "mongoose": "^6.0.4",
     "random": "^3.0.6",
     "uuid": "^8.3.2",

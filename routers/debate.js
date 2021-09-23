@@ -5,8 +5,8 @@ const _ = require('lodash');
 const {verified} = require("../middleware/verification");
 const {follower} = require("../middleware/follower");
 const {User} = require("../models/users");
-const mongoose = require('mongoose');
 const {params} = require("../middleware/params");
+const objectId = require('mongodb').ObjectId;
 
 router.post('/', [auth, verified], async(req, res)=>{
     const {error} = validate(req.body);
@@ -121,9 +121,21 @@ router.get('/', async(req, res)=>{
             }
         }
     ]);
+    res.send(debate);
+});
+
+router.delete('/:id', [auth, verified, params], async (req, res) => {
+    const debate = await Debate.findOne({_id: req.params.id});
+    if(!debate) return res.status(400).send('No debate found');
+
+    if(`${req.user._id}` !== `${objectId(debate.host._id)}`) return res.status(401).send('Can\'t delete debate.');
+
+    await User.updateMany({'following._id': objectId(req.params.id)}, {$pull: {following: _.pick(debate, ['_id', 'title'])}});
+    await User.updateMany({'liked._id': objectId(req.params.id)}, {$pull: {liked: _.pick(debate, ['_id', 'title'])}});
+    await User.findByIdAndUpdate(req.user._id, {$pull: {debates: _.pick(debate, ['_id', 'title'])}});
+    await Debate.findByIdAndRemove(req.params.id);
 
     res.send(debate);
-
 });
 
 module.exports = router;
