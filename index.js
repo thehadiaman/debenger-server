@@ -6,6 +6,9 @@ require('express-async-errors');
 // Logging errors
 require('./startup/logging.js')()
 
+// Setup CORS with various options
+require("./startup/cors")(app);
+
 // An error will throw if custom environment variables is not defined
 require('./startup/config.js')();
 
@@ -17,6 +20,7 @@ require('./startup/routers')(app);
 
 // Setup for production
 require('./startup/prod')(app);
+
 
 app.listen(process.env.PORT || 3000, ()=>{
     console.log(`Listening in port ${process.env.PORT || 3000}`);
