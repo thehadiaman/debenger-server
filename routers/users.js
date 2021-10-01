@@ -88,7 +88,11 @@ router.post('/verification', auth, async(req, res)=>{
     user.verified.error = null
     user.save();
 
-    res.send(user);
+    const token = user.generateAuthenticationToken();
+    res
+    .header('x-auth-token', token)
+    .header("access-control-expose-headers", "x-auth-token")
+    .send('user');
 
 });
 
