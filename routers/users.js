@@ -68,7 +68,7 @@ router.post('/verification', auth, async(req, res)=>{
 
     const user = await User.findOne({_id: req.user._id});
 
-    if(user.verified.verified) return res.send('verified user');
+    if(user.verified.verified) return res.status(400).send('User already verified');
 
     if(req.body.verificationCode !== user.verified.code){
         user.verified.error += 1;
@@ -78,21 +78,21 @@ router.post('/verification', auth, async(req, res)=>{
             user.verified.time = Date.now();
             await user.save();
             user.sendVerificationCode()
-            return res.send('3 attempt failed, new verification code available');
+            return res.status(400).send('3 attempt failed, new verification code available');
         }
         await user.save();
-        return res.send(`${user.verified.error} attempt failed, try again.`);
+        return res.status(400).send(`${user.verified.error} attempt failed, try again.`);
     }
 
     user.verified.verified = true
     user.verified.error = null
-    user.save();
+    await user.save();
 
     const token = user.generateAuthenticationToken();
     res
     .header('x-auth-token', token)
     .header("access-control-expose-headers", "x-auth-token")
-    .send('user');
+    .send(user);
 
 });
 
