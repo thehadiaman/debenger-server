@@ -147,6 +147,15 @@ router.delete('/:id', [auth, verified, params], async (req, res) => {
     res.send(debate);
 });
 
+router.get('/:id', [auth, verified, params], async(req, res)=>{
+
+    let debate = await Debate.findOne({_id: req.params.id});
+    if(!debate) return res.status(400).send('No debate found');
+
+    res.send(debate)
+
+});
+
 router.put('/:id', [auth, verified, params], async (req, res)=>{
     const debate = await Debate.findOne({_id: req.params.id});
     if(!debate) return res.status(400).send('No debate found');
