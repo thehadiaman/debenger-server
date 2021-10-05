@@ -124,6 +124,48 @@ router.get('/', async(req, res)=>{
             }
         },
         {
+            $sort: {date: -1}
+        },
+        {
+            $skip: (pageNumber-1)*pageSize
+        },
+        {
+            $limit: pageSize
+        }
+    ]);
+    res.send(debate);
+});
+
+router.get('/mydebates', async(req, res)=>{
+
+    const _id = req.query.id;
+    if(!_id) return res.status(400).send('No id found');
+
+    const pageNumber = req.query.page || 1;
+    const pageSize = 5;    
+
+    const debate = await Debate.aggregate([
+        {
+            $match: {
+                'host._id': _id
+            }
+        },
+        {
+            $project: {
+                title: 1,
+                description: 1,
+                tags: 1,
+                followers: 1,
+                date: 1,
+                host: 1,
+                messages: 1,
+                like: 1
+            }
+        },
+        {
+            $sort: {date: -1}
+        },
+        {
             $skip: (pageNumber-1)*pageSize
         },
         {
