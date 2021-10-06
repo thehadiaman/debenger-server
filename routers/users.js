@@ -17,7 +17,7 @@ router.get('/user/:id', params, async(req, res)=>{
 
 router.get('/me', auth, async(req, res)=>{
     
-    const user = _.pick(req.user, ['name', 'email']);
+    const user = _.pick(req.user, ['name', 'email', 'following', 'debates', 'liked']);
     res.send(user)
 
 });
