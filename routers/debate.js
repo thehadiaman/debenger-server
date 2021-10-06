@@ -110,7 +110,7 @@ router.get('/', async(req, res)=>{
     const pageNumber = req.query.page || 1;
     const pageSize = 5;
 
-    const debate = await Debate.aggregate([
+    const debates = await Debate.aggregate([
         {
             $project: {
                 title: 1,
@@ -125,18 +125,12 @@ router.get('/', async(req, res)=>{
         },
         {
             $sort: {date: -1}
-        },
-        {
-            $skip: (pageNumber-1)*pageSize
-        },
-        {
-            $limit: pageSize
         }
     ]);
-    res.send(debate);
+    res.send([_(debates).slice((pageNumber-1)*pageSize).take(pageSize).value(), Math.ceil((debates.length)/pageSize)]);
 });
 
-router.get('/mydebates', async(req, res)=>{
+router.get('/mydebates', params ,async(req, res)=>{
 
     const _id = req.query.id;
     if(!_id) return res.status(400).send('No id found');
@@ -144,7 +138,7 @@ router.get('/mydebates', async(req, res)=>{
     const pageNumber = req.query.page || 1;
     const pageSize = 5;    
 
-    const debate = await Debate.aggregate([
+    const debates = await Debate.aggregate([
         {
             $match: {
                 'host._id': _id
@@ -164,15 +158,9 @@ router.get('/mydebates', async(req, res)=>{
         },
         {
             $sort: {date: -1}
-        },
-        {
-            $skip: (pageNumber-1)*pageSize
-        },
-        {
-            $limit: pageSize
         }
     ]);
-    res.send(debate);
+    res.send([_(debates).slice((pageNumber-1)*pageSize).take(pageSize).value(), Math.ceil((debates.length)/pageSize)]);
 });
 
 router.delete('/:id', [auth, verified, params], async (req, res) => {
