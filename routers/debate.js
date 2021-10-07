@@ -209,4 +209,27 @@ router.put('/:id', [auth, verified, params], async (req, res)=>{
     res.send(result);
 });
 
+router.get('/search/:search_query', async(req, res)=>{
+
+    const search_query = req.params.search_query;
+    let debates = await Debate.aggregate([
+        {
+            $project: {
+                title: 1,
+                description: 1,
+                tags: 1,
+                followers: 1,
+                date: 1,
+                host: 1,
+                messages: 1,
+                like: 1
+            }
+        }
+    ]);
+
+    debates = debates.filter(debate=>debate.title.toLowerCase().includes(search_query.toLowerCase()));
+    res.send(_(debates).take(10).value());
+
+});
+
 module.exports = router;

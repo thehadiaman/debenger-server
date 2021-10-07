@@ -11,8 +11,7 @@ router.get('/user/:id', params, async(req, res)=>{
     const user = await User.findOne({_id: req.params.id});
     if(!user) return res.status(400).send("No user found");
 
-    res.send(_.pick(user, ['name', 'debates', 'following']));
-
+    res.send(_.pick(user, ['name', 'email', 'debates', 'following', 'liked']));
 });
 
 router.get('/me', auth, async(req, res)=>{
