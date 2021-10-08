@@ -100,7 +100,9 @@ router.post('/message/:id', [auth, verified, follower, params], async(req, res)=
     if(error) return res.status(400).send(error.details[0].message);
 
     await Debate.findByIdAndUpdate(req.params.id, {
-        $push: {messages: {messenger:{_id: req.user._id, name: req.user.name}, message: req.body.message} }});
+        $push: {messages: 
+            {$position:0, messenger:{_id: req.user._id, name: req.user.name}, message: req.body.message, time: Date.now()},
+         }});
     res.send(`${req.body.message}`);
 
 });
@@ -179,10 +181,28 @@ router.delete('/:id', [auth, verified, params], async (req, res) => {
 
 router.get('/:id', [auth, verified, params], async(req, res)=>{
 
-    let debate = await Debate.findOne({_id: req.params.id});
-    if(!debate) return res.status(400).send('No debate found');
+    let debate = await Debate.aggregate([
+        {
+            $match: {
+                _id: objectId(req.params.id)
+            }
+        },
+        {
+            $project: {
+                title: 1,
+                description: 1,
+                tags: 1,
+                followers: 1,
+                date: 1,
+                host: 1,
+                messages: 1,
+                like: 1
+            }
+        }
+    ]);
+    if(!debate) return res.status(404).send('No debate found');
 
-    res.send(debate)
+    res.send(debate[0])
 
 });
 
